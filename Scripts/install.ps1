@@ -2,15 +2,14 @@ $DotnetVersionName = "net8.0"
 
 $GitArtifactBaseUrl = "https://api.github.com/repos"
 $GitApiVersion = "2022-11-28"
-$GitTB = "Z2hwX0Zzb0E1QVhlODhtSTg5WXJEUDdTbWtEVDBqWnNLWTRVaWwwRg=="
-$GitAuth = [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String($GitTB))
+$GitReadOnlyToken = Read-Host "Enter github token"
 $GitOwnerName = "nilphumiphat212"
 $GitRepoName = "SQLR_CLI"
 
 $RequestHeaders = @{
     'Content-Type' = 'application/vnd.github+json'
     'X-GitHub-Api-Version' = $GitApiVersion
-    'Authorization' = 'Bearer ' + $GitAuth
+    'Authorization' = 'Bearer ' + $GitReadOnlyToken
 }
 
 $LocalAppData = [System.Environment]::GetFolderPath("ApplicationData")
