@@ -2,7 +2,7 @@ $DotnetVersionName = "net8.0"
 
 $GitArtifactBaseUrl = "https://api.github.com/repos"
 $GitApiVersion = "2022-11-28"
-$GitReadOnlyToken = "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"
+$GitReadOnlyToken = "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"
 $GitOwnerName = "nilphumiphat212"
 $GitRepoName = "SQLR_CLI"
 
