@@ -93,7 +93,7 @@ if ($null -ne $Artifacts) {
                 Remove-Item $TempPath -Recurse -Force
             }
 
-            $null = New-Item -Path $TempPath -ItemType Directory
+            New-Item -Path $TempPath -ItemType Directory
 
             $DlFilePath = Join-Path -Path $TempPath -ChildPath $ArtifactFileName
 
