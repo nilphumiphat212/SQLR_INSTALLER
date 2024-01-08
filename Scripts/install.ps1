@@ -7,9 +7,9 @@ $GitOwnerName = "nilphumiphat212"
 $GitRepoName = "SQLR_CLI"
 
 $RequestHeaders = @{
-    'Content-Type' = 'application/vnd.github+json'
+    'Content-Type'         = 'application/vnd.github+json'
     'X-GitHub-Api-Version' = $GitApiVersion
-    'Authorization' = 'Bearer ' + $GitReadOnlyToken
+    'Authorization'        = 'Bearer ' + $GitReadOnlyToken
 }
 
 $LocalAppData = [System.Environment]::GetFolderPath("ApplicationData")
@@ -45,8 +45,7 @@ function Download-File() {
         [String]$DestPath
     )
 
-    try
-    {
+    try {
         Invoke-WebRequest -Uri $Url -OutFile $DestPath -Headers $RequestHeaders
     }
     catch {
@@ -79,8 +78,7 @@ if ($IsWindowsOs -ne $true) {
 
 $Artifacts = Get-Artifact-List
 
-if ($null -ne $Artifacts)
-{
+if ($null -ne $Artifacts) {
     $Arch = Get-Arch-String
     $ArtifactFileName = "win-" + $Arch + ".zip"
     $Artifact = $Artifacts | Where-Object { $_.name -eq $ArtifactFileName }
@@ -125,7 +123,9 @@ if ($null -ne $Artifacts)
         Remove-Item $TempPath -Recurse -Force
 
         Write-Host "set environment variable..."
-        [System.Environment]::SetEnvironmentVariable("PATH", $InstallDestinationPath, [System.EnvironmentVariableTarget]::User)
+        if ($env:PATH -like $InstallDestinationPath) {
+            [System.Environment]::SetEnvironmentVariable("PATH", $InstallDestinationPath, [System.EnvironmentVariableTarget]::User)
+        }
 
         Write-Host "install successfully" -ForeGroundColor Green
     }
