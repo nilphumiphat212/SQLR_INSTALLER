@@ -2,7 +2,7 @@ $DotnetVersionName = "net8.0"
 
 $GitArtifactBaseUrl = "https://api.github.com/repos"
 $GitApiVersion = "2022-11-28"
-$GitReadOnlyToken = "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"
+$GitReadOnlyToken = "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"
 $GitOwnerName = "nilphumiphat212"
 $GitRepoName = "SQLR_CLI"
 
@@ -65,7 +65,7 @@ function Get-Artifact-List {
         return $Response.artifacts
     }
     catch {
-        Write-Host "fail : can not fetch sqlr version list " + $_ -ForeGroundColor Red
+        Write-Host "fail : can not fetch sqlr version list" -ForeGroundColor Red
         exit -1
     }
 }
