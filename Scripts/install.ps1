@@ -111,7 +111,8 @@ if ($null -ne $Artifacts)
         Write-Host "deep extracting..."
         Expand-Archive -Path $ExtractDeepPath -DestinationPath $TempPath
 
-        $BinaryPath = Join-Path -Path $TempPath -ChildPath "/bin/Release/" + $DotnetVersionName + "/win-x64/publish"
+        $BinarySubPath = "/bin/Release/" + $DotnetVersionName + "/win-x64/publish"
+        $BinaryPath = Join-Path -Path $TempPath -ChildPath $BinarySubPath
         $InstallDestinationPath = Join-Path -Path $LocalAppData -ChildPath "SQLR"
 
         if (Test-Path $InstallDestinationPath -PathType Container) {
