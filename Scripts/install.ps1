@@ -7,9 +7,9 @@ $GitOwnerName = "nilphumiphat212"
 $GitRepoName = "SQLR_CLI"
 
 $RequestHeaders = @{
-    'Content-Type' = 'application/vnd.github+json'
+    'Content-Type'         = 'application/vnd.github+json'
     'X-GitHub-Api-Version' = $GitApiVersion
-    'Authorization' = 'Bearer ' + $GitReadOnlyToken
+    'Authorization'        = 'Bearer ' + $GitReadOnlyToken
 }
 
 $LocalAppData = [System.Environment]::GetFolderPath("ApplicationData")
@@ -45,8 +45,7 @@ function Download-File() {
         [String]$DestPath
     )
 
-    try
-    {
+    try {
         Invoke-WebRequest -Uri $Url -OutFile $DestPath -Headers $RequestHeaders
     }
     catch {
@@ -79,55 +78,59 @@ if ($IsWindowsOs -ne $true) {
 
 $Artifacts = Get-Artifact-List
 
-if ($null -ne $Artifacts)
-{
+if ($null -ne $Artifacts) {
     $Arch = Get-Arch-String
     $ArtifactFileName = "win-" + $Arch + ".zip"
     $Artifact = $Artifacts | Where-Object { $_.name -eq $ArtifactFileName }
 
     if ($null -ne $Artifact) {
-        Write-Host "downloading sqlr cli..."
+        try {
+            Write-Host "downloading sqlr cli..."
 
-        $TempPath = Join-Path -Path $LocalAppData -ChildPath "SQLR_TEMP"
+            $TempPath = Join-Path -Path $LocalAppData -ChildPath "SQLR_TEMP "
 
-        if (Test-Path $TempPath -PathType Container) {
-            Remove-Item $TempPath -Recurse -Force
-        }
+            if (Test-Path $TempPath -PathType Container) {
+                Remove-Item $TempPath -Recurse -Force
+            }
 
-        $null = New-Item -Path $TempPath -ItemType Directory
+            $null = New-Item -Path $TempPath -ItemType Directory
 
-        $DlFilePath = Join-Path -Path $TempPath -ChildPath $ArtifactFileName
+            $DlFilePath = Join-Path -Path $TempPath -ChildPath $ArtifactFileName
 
-        Download-File -Url $Artifact.archive_download_url -DestPath $DlFilePath
-        Write-Host "download success..."
+            Download-File -Url $Artifact.archive_download_url -DestPath $DlFilePath
+            Write-Host "download success..."
 
-        $ExtractPath = Join-Path -Path $TempPath -ChildPath "Extract"
+            $ExtractPath = Join-Path -Path $TempPath -ChildPath "Extract"
         
-        Write-Host "extracting..."
-        Expand-Archive -Path $DlFilePath -DestinationPath $ExtractPath
+            Write-Host "extracting..."
+            Expand-Archive -Path $DlFilePath -DestinationPath $ExtractPath
 
-        $ExtractDeepPath = Join-Path -Path $ExtractPath -ChildPath $ArtifactFileName
+            $ExtractDeepPath = Join-Path -Path $ExtractPath -ChildPath $ArtifactFileName
 
-        Write-Host "deep extracting..."
-        Expand-Archive -Path $ExtractDeepPath -DestinationPath $TempPath
+            Write-Host "deep extracting..."
+            Expand-Archive -Path $ExtractDeepPath -DestinationPath $TempPath
 
-        $BinarySubPath = "/bin/Release/" + $DotnetVersionName + "/win-x64/publish"
-        $BinaryPath = Join-Path -Path $TempPath -ChildPath $BinarySubPath
-        $InstallDestinationPath = Join-Path -Path $LocalAppData -ChildPath "SQLR"
+            $BinarySubPath = "/bin/Release/" + $DotnetVersionName + "/win-x64/publish"
+            $BinaryPath = Join-Path -Path $TempPath -ChildPath $BinarySubPath
+            $InstallDestinationPath = Join-Path -Path $LocalAppData -ChildPath "SQLR"
 
-        if (Test-Path $InstallDestinationPath -PathType Container) {
-            Remove-Item $InstallDestinationPath -Recurse -Force
+            if (Test-Path $InstallDestinationPath -PathType Container) {
+                Remove-Item $InstallDestinationPath -Recurse -Force
+            }
+
+            Move-Item -Path $BinaryPath -Destination $InstallDestinationPath
+
+            Write-Host "cleaning temp..."
+            Remove-Item $TempPath -Recurse -Force
+
+            Write-Host "set environment variable..."
+            [System.Environment]::SetEnvironmentVariable("PATH", $InstallDestinationPath, [System.EnvironmentVariableTarget]::User)
+
+            Write-Host "install successfully" -ForeGroundColor Green
         }
-
-        Move-Item -Path $BinaryPath -Destination $InstallDestinationPath
-
-        Write-Host "cleaning temp..."
-        Remove-Item $TempPath -Recurse -Force
-
-        Write-Host "set environment variable..."
-        [System.Environment]::SetEnvironmentVariable("PATH", $InstallDestinationPath, [System.EnvironmentVariableTarget]::User)
-
-        Write-Host "install successfully" -ForeGroundColor Green
+        catch {
+            Write-Host "fail : unexpected error ($_)"
+        }
     }
     else {
         Write-Host "fail : unexpected error" -ForeGroundColor Red
