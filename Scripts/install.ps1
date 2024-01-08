@@ -65,7 +65,7 @@ function Get-Artifact-List {
         return $Response.artifacts
     }
     catch {
-        Write-Host "fail : can not fetch sqlr version list" -ForeGroundColor Red
+        Write-Host "fail : can not fetch sqlr version list " + $_ -ForeGroundColor Red
         exit -1
     }
 }
