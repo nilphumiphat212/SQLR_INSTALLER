@@ -124,7 +124,7 @@ if ($null -ne $Artifacts)
         Remove-Item $TempPath -Recurse -Force
 
         Write-Host "set environment variable..."
-        [System.Environment]::SetEnvironmentVariable("PATH", $env:PATH + ";" + $InstallDestinationPath, [System.EnvironmentVariableTarget]::User)
+        [System.Environment]::SetEnvironmentVariable("PATH", $InstallDestinationPath, [System.EnvironmentVariableTarget]::User)
 
         Write-Host "install successfully" -ForeGroundColor Green
     }
