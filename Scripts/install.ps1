@@ -2,7 +2,7 @@ $DotnetVersionName = "net8.0"
 
 $GitArtifactBaseUrl = "https://api.github.com/repos"
 $GitApiVersion = "2022-11-28"
-$GitReadOnlyToken = Read-Host "Enter github token"
+$GitReadOnlyToken = Read-Host "enter github token "
 $GitOwnerName = "nilphumiphat212"
 $GitRepoName = "SQLR_CLI"
 
@@ -14,6 +14,16 @@ $RequestHeaders = @{
 
 $LocalAppData = [System.Environment]::GetFolderPath("ApplicationData")
 
+function Die()
+{
+    param (
+        [String]$message
+    )
+
+    Write-Host $message -ForegroundColor Red
+    $UnUse = Read-Host "press any key to exit "
+    exit -1
+}
 function Get-Arch-String {
     $Arch = $env:PROCESSOR_ARCHITECTURE
     if ($Arch -eq "AMD64") {
@@ -49,8 +59,7 @@ function Get-File() {
         Invoke-WebRequest -Uri $Url -OutFile $DestPath -Headers $RequestHeaders
     }
     catch {
-        Write-Host "fail : can not download sqlr execuable file" -ForeGroundColor Red
-        exit -1
+        Die "fail : can not download sqlr execuable file"
     }
 }
 
@@ -64,16 +73,14 @@ function Get-Artifact-List {
         return $Response.artifacts
     }
     catch {
-        Write-Host "fail : can not fetch sqlr version list" -ForeGroundColor Red
-        exit -1
+        Die "fail : can not fetch sqlr version list"
     }
 }
 
 $IsWindowsOs = Get-Is-Windows
 
 if ($IsWindowsOs -ne $true) {
-    Write-Host "fail : this script support windows os only" -ForeGroundColor Red
-    exit 0
+    Die "fail : this script support windows os only"
 }
 
 $Artifacts = Get-Artifact-List
@@ -130,7 +137,6 @@ if ($null -ne $Artifacts) {
         Write-Host "install successfully" -ForeGroundColor Green
     }
     else {
-        Write-Host "fail : unexpected error" -ForeGroundColor Red
-        exit -1
+        Die "fail : unexpected error"
     }
 }
