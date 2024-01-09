@@ -24,11 +24,11 @@ function Get-Arch-String {
     }
 }
 
-function Is-Windows {
+function Get-Is-Windows {
     return $env:OS -like "Windows_NT" -or $IsWindows
 }
 
-function Call-Github-Api {
+function Get-Github-Api {
     param (
         [String]$Url,
         [String]$Method
@@ -39,7 +39,7 @@ function Call-Github-Api {
     return $Response 
 }
 
-function Download-File() {
+function Get-File() {
     param (
         [String]$Url,
         [String]$DestPath
@@ -60,7 +60,7 @@ function Get-Artifact-List {
     $Url = $GitArtifactBaseUrl + "/" + $GitOwnerName + "/" + $GitRepoName + "/actions/artifacts"
 
     try {
-        $Response = Call-Github-Api -Url $Url -Method Get
+        $Response = Get-Github-Api -Url $Url -Method Get
         return $Response.artifacts
     }
     catch {
@@ -69,7 +69,7 @@ function Get-Artifact-List {
     }
 }
 
-$IsWindowsOs = Is-Windows
+$IsWindowsOs = Get-Is-Windows
 
 if ($IsWindowsOs -ne $true) {
     Write-Host "fail : this script support windows os only" -ForeGroundColor Red
@@ -96,7 +96,7 @@ if ($null -ne $Artifacts) {
 
         $DlFilePath = Join-Path -Path $TempPath -ChildPath $ArtifactFileName
 
-        Download-File -Url $Artifact.archive_download_url -DestPath $DlFilePath
+        Get-File -Url $Artifact.archive_download_url -DestPath $DlFilePath
         Write-Host "download success..."
 
         $ExtractPath = Join-Path -Path $TempPath -ChildPath "Extract"
