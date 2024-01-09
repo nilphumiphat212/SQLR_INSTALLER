@@ -21,7 +21,7 @@ function Die()
     )
 
     Write-Host $message -ForegroundColor Red
-    $UnUse = Read-Host "press any key to exit "
+    $ = Read-Host "press any key to exit "
     exit -1
 }
 function Get-Arch-String {
