@@ -1,5 +1,15 @@
-#!bin/bash
+#!/bin/bash
 
 set -e
 
-echo "Comming implement..."
+home_directory=$HOME
+data_path=${XDG_DATA_HOME:-$home_directory/.local/share}
+install_path="$data_path/SQLR/"
+
+echo "do you want to uninstall sqlr (y/n) : "
+read confirm
+
+if [ "$confirm" == "y" ]; then
+    rm -rf $install_path
+    echo "uninstall successfully"
+fi
