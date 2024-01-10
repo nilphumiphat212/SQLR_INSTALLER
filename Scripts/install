@@ -109,11 +109,12 @@ mv $binary_path/** $install_path
 
 echo "set path..."
 profile_name=".zshrc"
-profile_path="$HOME/$profile_name"
 
-if [ $(get_os) == "linux" ]; then
-    $profile_name=".bashrc"
+if [ "$SHELL" == "/bin/bash" ]; then
+    profile_name=".bashrc"
 fi
+
+profile_path="$HOME/$profile_name"
 
 echo export PATH="$install_path:$PATH" >> "$profile_path"
 source "$profile_path"
