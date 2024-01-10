@@ -1,0 +1,124 @@
+#!/bin/bash
+
+set -e
+
+dotnet_version_name="net8.0"
+
+git_artifact_base_url="https://api.github.com/repos"
+git_api_version="2022-11-28"
+git_owner_name="nilphumiphat212"
+git_repo_name="SQLR_CLI"
+
+read -p "enter git token : " git_readonly_token
+
+arch=$(uname -m)
+
+die() {
+    echo -e "\033[1;31m $1 \033[0m"
+    exit -1
+}
+
+check_os_support() {
+    if [[ "$OSTYPE" != "linux-gnu"* ]] && [[ "$OSTYPE" != "darwin"* ]]; then
+        die "fail : this script support macos or linux only"
+    fi
+}
+
+check_dependencies() {
+    if ! command -v jq &> /dev/null; then
+        die "fail : jq is not install. please install jq before run this script."
+    fi
+}
+
+get_arch_str() {
+    case $arch in
+        "x86_64") echo "x64";;
+        "arm64") echo "arm64";;
+        *) echo "x86";;
+    esac
+}
+
+get_os() {
+    if [[ "$OSTYPE" == "linux-gnu"* ]]; then
+        echo "linux"
+    elif [[ "$OSTYPE" == "darwin"* ]]; then
+        echo "osx"
+    fi
+}
+
+call_github_api() {
+    curl -H "Content-Type: application/vnd.github+json" -H  "X-GitHub-Api-Version: $git_api_version" -H  "Authorization: Bearer $git_readonly_token" $1
+}
+
+download_file() {
+    url=$(echo "$1" | sed 's/"//g')
+    echo "dowloading $2..."
+    curl -L -o "$2" -H "Content-Type: application/vnd.github+json" -H  "X-GitHub-Api-Version: $git_api_version" -H  "Authorization: Bearer $git_readonly_token" "$url"
+}
+
+fetch_artifact_list() {
+    call_github_api
+}
+
+check_os_support
+
+check_dependencies
+
+home_directory=$HOME
+
+data_path=${XDG_DATA_HOME:-$home_directory/.local/share}
+
+fetch_artifact_url="$git_artifact_base_url/$git_owner_name/$git_repo_name/actions/artifacts"
+
+arch_name=$(get_os)-$(get_arch_str)
+file_name=$arch_name.zip
+artifacts=$(call_github_api $fetch_artifact_url)
+
+artifact=$(echo $artifacts | jq --arg file_name "$file_name" '.artifacts | map(select(.name == $file_name))')
+dl_link=$(echo "$artifact" | jq '.[0] | .archive_download_url')
+
+temp_path="$data_path/SQLR_TEMP"
+install_path="$data_path/SQLR/"
+
+if [ -d "$temp_path" ]; then
+    rm -rf $temp_path
+fi
+
+mkdir $temp_path
+
+file_dl_path="$temp_path/$file_name"
+
+download_file $dl_link $file_dl_path
+
+echo "extracting..."
+unzip -o $file_dl_path -d $temp_path
+
+echo "deep extracting..."
+unzip $file_dl_path -d $temp_path
+
+echo "installing..."
+binary_path="$temp_path/bin/Release/$dotnet_version_name/$arch_name/publish"
+
+if [ -d "$install_path" ]; then
+    rm -rf $install_path
+fi
+
+mkdir $install_path
+
+mv $binary_path/** $install_path
+
+echo "set path..."
+profile_name=".zshrc"
+profile_path="$HOME/$profile_name"
+
+if [ $(get_os) == "linux" ]; then
+    $profile_name=".bashrc"
+fi
+
+echo export PATH="$install_path:$PATH" >> "$profile_path"
+source "$profile_path"
+
+echo "cleaning..."
+rm -rf $temp_path
+
+echo "install successfully..."
