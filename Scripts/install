@@ -34,6 +34,7 @@ get_arch_str() {
     case $arch in
         "x86_64") echo "x64";;
         "arm64") echo "arm64";;
+        "aarch64") echo "arm64";;
         *) echo "x86";;
     esac
 }
