@@ -129,10 +129,10 @@ if ($null -ne $Artifacts) {
         Write-Host "cleaning temp..."
         Remove-Item $TempPath -Recurse -Force
 
-        Write-Host "set environment variable..."
-        # if (!$env:PATH -like $InstallDestinationPath) {
-        [System.Environment]::SetEnvironmentVariable("PATH", $InstallDestinationPath, [System.EnvironmentVariableTarget]::User)
-        # }
+        if (!$env:PATH -notlike "*$InstallDestinationPath*") {
+            Write-Host "set environment variable..."
+            [System.Environment]::SetEnvironmentVariable("PATH", $env:PATH + ";" + $InstallDestinationPath, [System.EnvironmentVariableTarget]::User)
+        }
 
         Write-Host "install successfully" -ForeGroundColor Green
     }
