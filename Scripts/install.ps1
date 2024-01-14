@@ -21,7 +21,7 @@ function Die()
     )
 
     Write-Host $message -ForegroundColor Red
-    $ = Read-Host "press any key to exit "
+    Read-Host "press any key to exit "
     exit -1
 }
 function Get-Arch-String {
@@ -91,6 +91,7 @@ if ($null -ne $Artifacts) {
     $Artifact = $Artifacts | Where-Object { $_.name -eq $ArtifactFileName }
 
     if ($null -ne $Artifact) {
+        $Artifact = $Artifact[0]
         Write-Host "downloading sqlr cli..."
 
         $TempPath = Join-Path -Path $LocalAppData -ChildPath "SQLR_TEMP"
@@ -102,7 +103,6 @@ if ($null -ne $Artifacts) {
         $null = New-Item -Path $TempPath -ItemType Directory
 
         $DlFilePath = Join-Path -Path $TempPath -ChildPath $ArtifactFileName
-
         Get-File -Url $Artifact.archive_download_url -DestPath $DlFilePath
         Write-Host "download success..."
 
@@ -130,7 +130,7 @@ if ($null -ne $Artifacts) {
         Remove-Item $TempPath -Recurse -Force
 
         Write-Host "set environment variable..."
-        if ($env:PATH -like $InstallDestinationPath) {
+        if (!$env:PATH -like $InstallDestinationPath) {
             [System.Environment]::SetEnvironmentVariable("PATH", $InstallDestinationPath, [System.EnvironmentVariableTarget]::User)
         }
 
