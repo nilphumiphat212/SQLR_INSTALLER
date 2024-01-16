@@ -129,7 +129,7 @@ if ($null -ne $Artifacts) {
         Write-Host "cleaning temp..."
         Remove-Item $TempPath -Recurse -Force
 
-        if (!$env:PATH -notlike "*$InstallDestinationPath*") {
+        if ($env:PATH -notlike "*$InstallDestinationPath*") {
             Write-Host "set environment variable..."
             [System.Environment]::SetEnvironmentVariable("PATH", $env:PATH + ";" + $InstallDestinationPath, [System.EnvironmentVariableTarget]::User)
         }
