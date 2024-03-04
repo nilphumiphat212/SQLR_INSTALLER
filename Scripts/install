@@ -10,9 +10,9 @@ git_owner_name="nilphumiphat212"
 git_repo_name="SQLR_CLI"
 
 if [[ -z "${SQLR_GIT_TOKEN}" ]]; then
-    git_readonly_token="${SQLR_GIT_TOKEN}"
-else
     read -p "enter git token : " git_readonly_token
+else
+    git_readonly_token="${SQLR_GIT_TOKEN}"
 fi
 
 arch=$(uname -m)
