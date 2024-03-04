@@ -9,7 +9,11 @@ git_api_version="2022-11-28"
 git_owner_name="nilphumiphat212"
 git_repo_name="SQLR_CLI"
 
-read -p "enter git token : " git_readonly_token
+if [[ -z "${SQLR_GIT_TOKEN}" ]]; then
+    git_readonly_token="${SQLR_GIT_TOKEN}"
+else
+    read -p "enter git token : " git_readonly_token
+fi
 
 arch=$(uname -m)
 
