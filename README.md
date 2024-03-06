@@ -19,3 +19,11 @@ linux/macos (run script with terminal)
 ```bash
 /bin/bash -c "$(curl -fsSL https://github.com/nilphumiphat212/SQLR_INSTALLER/raw/main/Scripts/uninstall)"
 ```
+# SQLR SERVER
+
+**Docker**
+
+build image
+```bash
+```
+
